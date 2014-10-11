@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Topera</title>
+	</head>
+	<body>
+		<h1>Topera</h1>
+		<h3>Query</h3>
+		<table id="results">
+		% for word in table_word_count:
+			<tr>
+				<td>{{word}}</td>
+				<td>{{table_word_count[word]}}</td>
+			</tr>
+		% end
+		</table>
+		<h3>Ranking</h3>
+		<table id="ranking">
+			% for word, occurance in ordered_word:
+			<tr>
+				<td>{{word}}</td>
+				<td>{{occurance}}</td>
+			</tr>
+		% end
+		</table>
+	</body>
+</html>

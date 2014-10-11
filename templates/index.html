@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Topera</title>
+	</head>
+	<body>
+		<h1>Topera</h1>
+		<form action="/result" method="GET">
+			<input type="text" placeholder="Topera for winners!" name="search" autofocus required>
+			<button type="submit">submit</button>
+		</form>
+		<h3>Ranking</h3>
+		<table id="ranking">
+			% for word, occurance in ordered_word:
+			<tr>
+				<td>{{word}}</td>
+				<td>{{occurance}}</td>
+			</tr>
+		% end
+		</table>
+	</body>
+</html>
