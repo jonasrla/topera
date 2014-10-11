@@ -26,8 +26,8 @@ def word_counter(string):
 
 @route('/result', method=['GET'])
 def show_result():
-    print request.query.get('search','').strip()
-    table_word_count = word_counter(request.query.get('search','').strip())
+    print request.query.get('keywords','').strip()
+    table_word_count = word_counter(request.query.get('keywords','').strip())
     return template("templates/result.html", table_word_count=table_word_count, ordered_word=get_top_20())
 
 def get_top_20():
