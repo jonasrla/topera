@@ -9,6 +9,12 @@
 			<input type="text" placeholder="Topera for winners!" name="keywords" autofocus required>
 			<button type="submit">submit</button>
 		</form>
+		%if not logged:
+		<span>
+			<a href="/autenticate">login</a>
+		</span>
+		% end
+		%if logged:
 		<h3>Ranking</h3>
 		<table id="history">
 			% for word, occurance in ordered_word:
@@ -16,7 +22,10 @@
 				<td>{{word}}</td>
 				<td>{{occurance}}</td>
 			</tr>
-		% end
+			% end
 		</table>
+		</br>
+		<a href="/logout">Logout</a>
+		% end
 	</body>
 </html>

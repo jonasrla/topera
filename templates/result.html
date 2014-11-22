@@ -14,6 +14,7 @@
 			</tr>
 		% end
 		</table>
+		%if logged:
 		<h3>Ranking</h3>
 		<table id="history">
 			% for word, occurance in ordered_word:
@@ -21,7 +22,11 @@
 				<td>{{word}}</td>
 				<td>{{occurance}}</td>
 			</tr>
-		% end
+			% end
 		</table>
+		% end
+		</br>
+		<a href="/">Back</a>
+		<a href="/logout">Logout</a>
 	</body>
 </html>
