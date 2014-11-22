@@ -6,26 +6,9 @@
 	<body>
 		<h1>Topera</h1>
 		<form action="/result" method="GET">
-			<input type="text" placeholder="Topera for winners!" name="keywords" autofocus required>
-			<button type="submit">submit</button>
+			<input type="text" placeholder="Type your search" name="word" autofocus required>
+			<button type="submit">Search</button>
 		</form>
-		%if not logged:
-		<span>
-			<a href="/autenticate">login</a>
-		</span>
-		% end
-		%if logged:
-		<h3>Ranking</h3>
-		<table id="history">
-			% for word, occurance in ordered_word:
-			<tr>
-				<td>{{word}}</td>
-				<td>{{occurance}}</td>
-			</tr>
-			% end
-		</table>
-		</br>
-		<a href="/logout">Logout</a>
-		% end
 	</body>
 </html>
+
