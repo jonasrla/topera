@@ -13,4 +13,9 @@ def index():
 
 @route('/result', method=['GET'])
 def result():
-	
+	word_search = query_word_db(word, max=10)
+
+
+@error(404)
+def error404(error):
+	return("templates/error404.html")
