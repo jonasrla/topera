@@ -19,3 +19,6 @@ def result():
 @error(404)
 def error404(error):
 	return("templates/error404.html")
+	
+if __name__ == "__main__":
+	run(app=app, host='localhost',port=8080)
