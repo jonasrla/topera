@@ -1,10 +1,11 @@
-from bottle import route, run, template, get, request, redirect
+from bottle import route, run, template, get, request, redirect, app, hook
 import operator
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.client import flow_from_clientsecrets
 from apiclient.errors import HttpError
 from apiclient.discovery import build
 import httplib2
+from beaker.middleware import SessionMiddleware
 
 # GOOGLE API CODE --------------------BEGINS-----------------
 flow = OAuth2WebServerFlow(
@@ -14,6 +15,25 @@ flow = OAuth2WebServerFlow(
 	scope='https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email'
 	)
 
+session_opts = {
+	'session.type': 'file',
+	'session.cookie_expires': 300,
+	'session.data_dir': './data',
+	'session.auto': True
+}
+app = SessionMiddleware(app(), session_opts)
+
+@hook('before_request')
+def setup_request():
+	request.session = request.environ.get('beaker.session')
+
+# @route('/test')
+# def test():
+# 	s = request.environ.get('beaker.session')
+# 	s['test'] = s.get('test',0) + 1
+# 	s.save()
+# 	return 'Test counter: %d' % s['test']
+
 @route('/autenticate', 'GET')
 def autenticate_1():
 	uri = flow.step1_get_authorize_url()
@@ -21,54 +41,78 @@ def autenticate_1():
 
 @route('/oauth2callback', 'GET')
 def autenticate_2():
+	global users_data
 	credentials = flow.step2_exchange(request.query.get('code',''))
-	
+
 	http = httplib2.Http()
 	http = credentials.authorize(http)
 	# Get user email
 	users_service = build('oauth2', 'v2', http=http)
 	user_document = users_service.userinfo().get().execute()
 	user_email = str(user_document['email'])
-	
+
 	print type(user_email)
+	request.session['logged'] = True
+	request.session['user_email'] = user_email
+	# if user_email not in users_data:
+	# 	users_data[user_email] = {}
+
+	request.session.save()
+
+	print users_data
 	
-	return user_email
+	redirect('/')
 
 #GOOGLE API CODE -------------------END----------------
 
-ranking = {}
+@route('/logout')
+def logout():
+	request.session['logged'] = False
+	redirect('/')
+
+users_data = {}
+
 
 @get('/')
 def init():
-    return template("templates/index.html", ordered_word=get_top_20())
+	logged = request.session.get('logged', False)
+	if logged:
+		if request.session['user_email'] not in users_data:
+			users_data[request.session['user_email']] = {}
+	return template("templates/index.html", ordered_word=get_top_20(), logged=logged)
 
-def word_counter(string):
-    global ranking
-    list_words = string.split(" ")
-    result = {}
-    for word in list_words:
-        if word in result:
-            result[word]+=1
-            ranking[word]+=1
-        if word not in result:    
-            result[word]=1
-            if word not in ranking:
-                ranking[word]=1
-            else:
-                ranking[word]+=1
-    print result
-    return result
+def word_counter(string, logged):
+	global users_data
+	list_words = string.split(" ")
+	result = {}
+	for word in list_words:
+		if word in result:
+			result[word]+=1
+			if logged:
+				users_data[request.session['user_email']][word]+=1
+		if word not in result:
+			result[word]=1
+			if logged:
+				if word not in users_data[request.session['user_email']]:
+					users_data[request.session['user_email']][word]=1
+				else:
+					users_data[request.session['user_email']][word]+=1
+	return result
 
 @route('/result', method=['GET'])
 def show_result():
-    print request.query.get('keywords','').strip()
-    table_word_count = word_counter(request.query.get('keywords','').strip())
-    return template("templates/result.html", table_word_count=table_word_count, ordered_word=get_top_20())
+	logged = request.session.get('logged', False)
+	print request.query.get('keywords','').strip()
+	table_word_count = word_counter(request.query.get('keywords','', ).strip(),logged)
+	return template("templates/result.html", table_word_count=table_word_count, ordered_word=get_top_20(), logged=logged)
 
 def get_top_20():
-    global ranking
-    ordered_words = sorted(ranking.items(), key=operator.itemgetter(1), reverse=True)[:20]
-    return ordered_words
+	global users_data
+	if request.session.get('logged', False):
+		ordered_words = sorted(users_data[request.session['user_email']].items(), key=operator.itemgetter(1), reverse=True)[:20]
+	else:
+		ordered_words = None
+	return ordered_words
 
 if __name__ == "__main__":
-    run(host='localhost',port=8080)
+	run(app=app, host='localhost',port=8080)
