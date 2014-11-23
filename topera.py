@@ -6,6 +6,7 @@ from apiclient.errors import HttpError
 from apiclient.discovery import build
 import httplib2
 from beaker.middleware import SessionMiddleware
+from Backend.models import *
 
 # GOOGLE API CODE --------------------BEGINS-----------------
 flow = OAuth2WebServerFlow(
@@ -103,6 +104,7 @@ def word_counter(string, logged):
 def show_result():
 	logged = request.session.get('logged', False)
 	print request.query.get('keywords','').strip()
+	documents = [str(elem.document) for elem in Documents.select().join(InvertedIndex).join(Lexicon).where(Lexicon.word==word).order_by(Documents.page_rank.desc())]
 	table_word_count = word_counter(request.query.get('keywords','', ).strip(),logged)
 	return template("templates/result.html", table_word_count=table_word_count, ordered_word=get_top_20(), logged=logged)
 

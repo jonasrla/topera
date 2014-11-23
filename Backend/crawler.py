@@ -23,6 +23,7 @@ import urlparse
 from BeautifulSoup import *
 from collections import defaultdict
 import re
+from models import *
 
 def attr(elem, attr):
     """An html attribute from an html element. E.g. <a href="">, then
@@ -123,17 +124,21 @@ class crawler(object):
     def _mock_insert_document(self, url):
         """A function that pretends to insert a url into a document db table
         and then returns that newly inserted document's id."""
-        ret_id = self._mock_next_doc_id
-        self._mock_next_doc_id += 1
-        return ret_id
+        try:
+            Documents.create(document=url, page_rank=0)
+        except IntegrityError:
+            pass
+        return Documents.select().where(Documents.document==url).get().id
 
     # TODO remove me in real version
     def _mock_insert_word(self, word):
         """A function that pretends to inster a word into the lexicon db table
         and then returns that newly inserted word's id."""
-        ret_id = self._mock_next_word_id
-        self._mock_next_word_id += 1
-        return ret_id
+        try:
+            Lexicon.create(word=word)
+        except IntegrityError:
+            pass
+        return Lexicon.select().where(Lexicon.word==word).get().id
 
     def word_id(self, word):
         """Get the word id of some specific word."""
@@ -178,7 +183,10 @@ class crawler(object):
     def add_link(self, from_doc_id, to_doc_id):
         """Add a link into the database, or increase the number of links between
         two pages in the database."""
-        # TODO
+        try:
+            Links.create(from_doc=from_doc_id, to_doc=to_doc_id)
+        except IntegrityError:
+            Links.update(num_link = Links.num_link + 1).where(Links.from_doc==from_doc_id).where(Links.to_doc==to_doc_id).execute()
 
     def _visit_title(self, elem):
         """Called when visiting the <title> tag."""
@@ -304,10 +312,14 @@ class crawler(object):
         direct_word = dict([(value, key) for key, value in self._word_id_cache.iteritems()])
         for word_id, font in self._curr_words:
             word = direct_word[word_id]
-            if word in self._inverted_index_cache:
-                self._inverted_index_cache[self._word_id_cache[word]].add(self.document_id(self._curr_url))
-            else:
-                self._inverted_index_cache[self._word_id_cache[word]] = {self.document_id(self._curr_url)}
+            try:
+                InvertedIndex.create(word=word_id, document=self.document_id(self._curr_url))
+            except IntegrityError:
+                pass
+            # if word in self._inverted_index_cache:
+            #     self._inverted_index_cache[self._word_id_cache[word]].add(self.document_id(self._curr_url))
+            # else:
+            #     self._inverted_index_cache[self._word_id_cache[word]] = {self.document_id(self._curr_url)}
 
     def get_inverted_index(self):
         return self._inverted_index_cache
