@@ -1,32 +1,41 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Topera</title>
-	</head>
-	<body>
-		<h1>Topera</h1>
-		<h3>Query</h3>
-		<table id="results">
-		% for word in table_word_count:
-			<tr>
-				<td>{{word}}</td>
-				<td>{{table_word_count[word]}}</td>
-			</tr>
+<head>
+	<title>Topera</title>
+</head>
+<body>
+	<h1>Topera</h1>
+	%if not len(result):
+	<h2>no such word</h2>
+	%end
+	%if len(result):
+	<h3>Query</h3>
+	<table id="results">
+		% for word in result[number:number+10]:
+		<tr>
+			<td>{{word}}</td>
+		</tr>
+	</table>
+	% end
+	%if logged:
+	<h3>Ranking</h3>
+	<table id="history">
+		% for word, occurance in ordered_word:
+		<tr>
+			<td>{{word}}</td>
+			<td>{{occurance}}</td>
+		</tr>
 		% end
-		</table>
-		%if logged:
-		<h3>Ranking</h3>
-		<table id="history">
-			% for word, occurance in ordered_word:
-			<tr>
-				<td>{{word}}</td>
-				<td>{{occurance}}</td>
-			</tr>
-			% end
-		</table>
-		% end
-		</br>
-		<a href="/">Back</a>
-		<a href="/logout">Logout</a>
-	</body>
+	</table>
+	% end
+</br>
+<p>
+	%for i in range(1,len(result)/10+1):
+	<a href="/result/{{10*i}}?keywords={{query}}">{{i}}</a>
+	% end
+</p>
+%end
+<a href="/">Back</a>
+<a href="/logout">Logout</a>
+</body>
 </html>
