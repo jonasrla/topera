@@ -100,20 +100,21 @@ def word_counter(string, logged):
 					users_data[request.session['user_email']][word]+=1
 	return result
 
-@route('/result', method=['GET'])
-def show_result():
+@route('/result/<page_number>', method=['GET'])
+def show_result(page_number=0):
+	number = int(page_number)
 	logged = request.session.get('logged', False)
-	print request.query.get('keywords','').strip()
+	word = request.query.get('keywords','').strip().split()[0]
 	documents = [str(elem.document) for elem in Documents.select().join(InvertedIndex).join(Lexicon).where(Lexicon.word==word).order_by(Documents.page_rank.desc())]
 	table_word_count = word_counter(request.query.get('keywords','', ).strip(),logged)
-	return template("templates/result.html", table_word_count=table_word_count, ordered_word=get_top_20(), logged=logged)
+	return template("templates/result.html", number=number, result=documents, ordered_word=get_top_20(), logged=logged, query=word)
 
 def get_top_20():
 	global users_data
 	if request.session.get('logged', False):
 		ordered_words = sorted(users_data[request.session['user_email']].items(), key=operator.itemgetter(1), reverse=True)[:20]
 	else:
-		ordered_words = None
+		ordered_words = []
 	return ordered_words
 
 @error(404)
