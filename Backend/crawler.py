@@ -24,6 +24,7 @@ from BeautifulSoup import *
 from collections import defaultdict
 import re
 from models import *
+import pagerank
 
 def attr(elem, attr):
     """An html attribute from an html element. E.g. <a href="">, then
@@ -366,6 +367,10 @@ class crawler(object):
             finally:
                 if socket:
                     socket.close()
+        pr = pagerank.page_rank([(elem.from_doc.id, elem.to_doc.id) for elem in Links.select()])
+        for doc_id, rank_score in pr.iteritems():
+            print doc_id, rank_score
+            Documents.update(page_rank=rank_score).where(Documents.id==doc_id).execute()
 
 if __name__ == "__main__":
     bot = crawler(None, "urls.txt")
