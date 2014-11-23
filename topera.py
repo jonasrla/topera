@@ -1,4 +1,4 @@
-from bottle import route, run, template, get, request, redirect, app, hook
+from bottle import route, run, template, get, request, redirect, app, hook, error
 import operator
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.client import flow_from_clientsecrets
