@@ -4,11 +4,24 @@
 		<title>Topera</title>
 	</head>
 	<body>
+		<img src="https://dl-web.dropbox.com/get/Public/Logo.png?_subject_uid=65821495&w=AAAMgLoSp3UVBiWttbr9j5eF36u2Ilwju8rBxCVFrttQhw"></img>
 		<h1>Topera</h1>
 		<form action="/result" method="GET">
-			<input type="text" placeholder="Type your search" name="word" autofocus required>
-			<button type="submit">Search</button>
+			<input type="text" placeholder="Topera for winners!" name="keywords" autofocus required>
+			<button type="submit">submit</button>
 		</form>
+		<h3>Ranking</h3>
+		<table id="history">
+			<tr>
+				<td>Word</td>
+				<td>Count</td>
+			</tr>
+			% for word, occurance in ordered_word:
+			<tr>
+				<td>{{word}}</td>
+				<td>{{occurance}}</td>
+			</tr>
+		% end
+		</table>
 	</body>
 </html>
-
