@@ -114,5 +114,9 @@ def get_top_20():
 		ordered_words = None
 	return ordered_words
 
+@error(404)
+def error404(error):
+	return template("templates/error404.html")
+
 if __name__ == "__main__":
 	run(app=app, host='localhost',port=8080)
