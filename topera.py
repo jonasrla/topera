@@ -1,4 +1,4 @@
-from bottle import route, run, template, get, request, redirect, app, hook, error
+from bottle import route, run, template, get, request, redirect, app, hook, error, redirect
 import operator
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.client import flow_from_clientsecrets
@@ -80,6 +80,9 @@ def init():
 	if logged:
 		if request.session['user_email'] not in users_data:
 			users_data[request.session['user_email']] = {}
+	word = request.query.get('keywords','').strip()
+	if word != "":
+		redirect("/result/0?keywords="+"+".join(word.split()))
 	return template("templates/index.html", ordered_word=get_top_20(), logged=logged)
 
 def word_counter(string, logged):
