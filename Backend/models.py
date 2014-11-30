@@ -12,7 +12,8 @@ class BaseModel(Model):
 class Lexicon(BaseModel):
     id = PrimaryKeyField()
     word = CharField(index=True, unique=True)
-    
+#    font_size = IntegerField()
+
 
 class Documents(BaseModel):
     id = PrimaryKeyField()
