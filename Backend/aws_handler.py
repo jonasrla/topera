@@ -1,6 +1,7 @@
 import boto.ec2
 import boto.ec2.connection
 import csv
+import time
 
 f = open('credentials.csv','r')
 reader = csv.reader(f,delimiter=',')
@@ -18,7 +19,9 @@ connection.authorize_security_group(group_name='csc326-group30', ip_protocol='TC
 res = connection.run_instances('ami-8caa1ce4', key_name="topera", security_groups=["csc326-group30"])
 ins = res.instances[0]
 while ins.state != unicode('running'):
-    pass
+    print "."
+    time.sleep(1)
+    ins.update()
 ip = ins.ip_address
 print ip
 
