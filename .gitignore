@@ -1,2 +1,4 @@
 /data
 *.pyc
+/Backend/credentials.csv
+/Backend/topera.pem
