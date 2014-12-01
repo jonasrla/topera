@@ -13,7 +13,7 @@ connection = boto.ec2.connect_to_region('us-east-1', aws_access_key_id=key[1], a
 # key.save(".")
 sec_group = None
 try:
-	sec_group = connection.create_security_group('csc326-group30','group for users of the search engine Topera')
+    sec_group = connection.create_security_group('csc326-group30','group for users of the search engine Topera')
 
 
 	connection.authorize_security_group(group_name='csc326-group30', ip_protocol='ICMP', from_port=-1, to_port=-1, cidr_ip='0.0.0.0/0')
