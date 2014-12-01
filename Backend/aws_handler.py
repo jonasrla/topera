@@ -36,32 +36,37 @@ print ip
 
 client = paramiko.SSHClient()
 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-time.sleep(40)
-print "waiting machine"
-for i in range(5):
+
+# raw_input("Wait for the machine then press any key\n")
+print "Waiting for the machine. It will take about 10 minutes"
+time.sleep(300)
+print "5 minutes left"
+time.sleep(300)
+while True:
     print "Trying to connect..."
     try:
         client.connect(ip,username="ubuntu",key_filename="topera.pem", timeout=20.0)
         print "Connection Successful"
         break
     except Exception:
-        time.sleep(5)
-        print "Trying againg"
+        print "Connection Failed"
+        answer = raw_input("Try again?[y/n]\n")
+        if answer.strip() in ["y","Y","yes"]:
+            time.sleep(5)
+            print "Trying againg" 
+        else:
+            break
 
-# channel = client.get_transport().open_session()
-
-# commands = ['sudo apt-get install python-pip python-dev build-essential', 'sudo pip install --upgrade pip', 'sudo pip install --upgrade virtualenv', 'sudo pip install bottle', 'sudo pip install --upgrade oauth2client', 'sudo pip install --upgrade google-api-python-client', 'sudo pip install beaker']
-# for com in commands:
-#   channel.exec_command(com)
-#   channel = client.get_transport().open_session()
-#   while not channel.exit_status_ready():
-#       time.sleep(1)
-#       print "."
-#   print "executed '"+com+"'"
-
-
-# scp = SSHClient(client.get_transport())
-# scp.put(file_name)
+commands = ['sudo apt-get update','sudo apt-get install python-pip python-dev build-essential', 'sudo pip install --upgrade pip', 'sudo pip install --upgrade virtualenv', 'sudo pip install bottle', 'sudo pip install --upgrade oauth2client', 'sudo pip install --upgrade google-api-python-client', 'sudo pip install beaker', 'sudo apt-get install unzip']
+for n, com in enumerate(commands):
+    stdin, stdout, stderr = client.exec_command(com)
+    time.sleep(5)
+    if n == 1:
+        stdin.write('y\n')
+        time.sleep(100)
+    else:
+        time.sleep(15)
+    print "executed '"+com+"'"
 
 
 if __name__=="__main__":
@@ -72,8 +77,12 @@ if __name__=="__main__":
     parser.add_argument("file", nargs=1, help='Name the zip file with the website files')
 
     file_name = parser.parse_args().file[0]
-    scp = SSHClient(client.get_transport())
+    scp = SCPClient(client.get_transport())
     scp.put(file_name)
+    stdin, stdout, stderr = client.exec_command("unzip "+file_name)
+    stdin, stdout, stderr = client.exec_command("python topera.py")
+    print stdout.next()
+
     print "connection %s" % ("ok" if connection else "failed")
     print "key pair %s" % ("ok" if key else "failed")
     print "security group %s" % ("ok" if sec_group else "failed")
