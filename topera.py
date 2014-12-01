@@ -103,14 +103,64 @@ def word_counter(string, logged):
 					users_data[request.session['user_email']][word]+=1
 	return result
 
+def get_operator_fn(op):
+	return {
+		'+' : operator.add,
+		'-' : operator.sub,
+		'*' : operator.mul,
+		'/' : operator.div,
+		'%' : operator.mod,
+		'^' : operator.xor,
+		}[op]
+
+
+def evaluate(string):
+	operations = ["+","-","*","/"]
+	accu = 0
+	try:
+		return float(string)
+	except ValueError:
+		try:
+			for op in operations:
+				num_list = string.split(op)
+				if len(num_list) > 1:
+					break
+			if len(num_list) > 1:
+				accu = evaluate(num_list[0])
+				# if accu == None:
+				# 	return None
+				for num in num_list[1:]:
+					accu = get_operator_fn(op)(accu, evaluate(num))
+				return accu
+			else:
+				return None
+		except TypeError:
+			return None
+	except TypeError:
+		return None
+
+def teste(evaluated, original):
+	if evaluated == None:
+		return False
+	try:
+		float(original)
+		return False
+	except Exception:
+		return True
+
 @route('/result/<page_number>', method=['GET'])
 def show_result(page_number=0):
 	number = int(page_number)
 	logged = request.session.get('logged', False)
 	word = request.query.get('keywords','').strip().split()[0]
+	value = evaluate(request.query.get('keywords','').strip())
 	documents = [str(elem.document) for elem in Documents.select().join(InvertedIndex).join(Lexicon).where(Lexicon.word==word).order_by(Documents.page_rank.desc())]
 	table_word_count = word_counter(request.query.get('keywords','', ).strip(),logged)
-	return template("templates/result.html", number=number, result=documents, ordered_word=get_top_20(), logged=logged, query=word)
+	if not teste(value, request.query.get('keywords','').strip()):
+		return template("templates/result.html", number=number, result=documents, ordered_word=get_top_20(), logged=logged, query=word)
+	else:
+		return template("templates/calculation.html", value=value)
+
 
 def get_top_20():
 	global users_data
