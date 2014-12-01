@@ -65,6 +65,15 @@ for i in range(5):
 
 
 if __name__=="__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Script to deploy the website')
+
+    parser.add_argument("file", nargs=1, help='Name the zip file with the website files')
+
+    file_name = parser.parse_args().file[0]
+    scp = SSHClient(client.get_transport())
+    scp.put(file_name)
     print "connection %s" % ("ok" if connection else "failed")
     print "key pair %s" % ("ok" if key else "failed")
     print "security group %s" % ("ok" if sec_group else "failed")
