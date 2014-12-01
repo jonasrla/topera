@@ -16,12 +16,12 @@ try:
     sec_group = connection.create_security_group('csc326-group30','group for users of the search engine Topera')
 
 
-	connection.authorize_security_group(group_name='csc326-group30', ip_protocol='ICMP', from_port=-1, to_port=-1, cidr_ip='0.0.0.0/0')
-	connection.authorize_security_group(group_name='csc326-group30', ip_protocol='TCP', from_port=22, to_port=22, cidr_ip='0.0.0.0/0')
-	connection.authorize_security_group(group_name='csc326-group30', ip_protocol='TCP', from_port=80, to_port=80, cidr_ip='0.0.0.0/0')
+    connection.authorize_security_group(group_name='csc326-group30', ip_protocol='ICMP', from_port=-1, to_port=-1, cidr_ip='0.0.0.0/0')
+    connection.authorize_security_group(group_name='csc326-group30', ip_protocol='TCP', from_port=22, to_port=22, cidr_ip='0.0.0.0/0')
+    connection.authorize_security_group(group_name='csc326-group30', ip_protocol='TCP', from_port=80, to_port=80, cidr_ip='0.0.0.0/0')
 except boto.exception.EC2ResponseError:
-	sec_group = 'csc326-group30'
-	print "Already exist"
+    sec_group = 'csc326-group30'
+    print "Already exist"
 
 res = connection.run_instances('ami-8caa1ce4', key_name="topera", security_groups=["csc326-group30"])
 ins = res.instances[0]
