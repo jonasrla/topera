@@ -109,13 +109,12 @@ def get_operator_fn(op):
 		'-' : operator.sub,
 		'*' : operator.mul,
 		'/' : operator.div,
-		'%' : operator.mod,
-		'^' : operator.xor,
+		'^' : operator.pow,
 		}[op]
 
 
 def evaluate(string):
-	operations = ["+","-","*","/"]
+	operations = ["-","+","/","*","^"]
 	accu = 0
 	try:
 		return float(string)
