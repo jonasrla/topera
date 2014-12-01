@@ -2,6 +2,8 @@ import boto.ec2
 import boto.ec2.connection
 import csv
 import time
+import paramiko
+from scp import SCPClient
 
 f = open('credentials.csv','r')
 reader = csv.reader(f,delimiter=',')
@@ -31,6 +33,35 @@ while ins.state != unicode('running'):
     ins.update()
 ip = ins.ip_address
 print ip
+
+client = paramiko.SSHClient()
+client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+time.sleep(40)
+print "waiting machine"
+for i in range(5):
+    print "Trying to connect..."
+    try:
+        client.connect(ip,username="ubuntu",key_filename="topera.pem", timeout=20.0)
+        print "Connection Successful"
+        break
+    except Exception:
+        time.sleep(5)
+        print "Trying againg"
+
+# channel = client.get_transport().open_session()
+
+# commands = ['sudo apt-get install python-pip python-dev build-essential', 'sudo pip install --upgrade pip', 'sudo pip install --upgrade virtualenv', 'sudo pip install bottle', 'sudo pip install --upgrade oauth2client', 'sudo pip install --upgrade google-api-python-client', 'sudo pip install beaker']
+# for com in commands:
+#   channel.exec_command(com)
+#   channel = client.get_transport().open_session()
+#   while not channel.exit_status_ready():
+#       time.sleep(1)
+#       print "."
+#   print "executed '"+com+"'"
+
+
+# scp = SSHClient(client.get_transport())
+# scp.put(file_name)
 
 
 if __name__=="__main__":
