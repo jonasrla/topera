@@ -171,14 +171,15 @@ def teste(evaluated, original):
 def show_result(page_number=0):
 	number = int(page_number)
 	logged = request.session.get('logged', False)
-	word = request.query.get('keywords','').strip().split()[0]
-	value = evaluate(request.query.get('keywords','').strip())
+	query = request.query.get('keywords','').strip()
+	word = query.split()[0]
+	value = evaluate(query)
 	documents = [str(elem.document) for elem in Documents.select().join(InvertedIndex).join(Lexicon).where(Lexicon.word==word).order_by(Documents.page_rank.desc())]
 	table_word_count = word_counter(request.query.get('keywords','', ).strip(),logged)
-	if not teste(value, request.query.get('keywords','').strip()):
-		return template("templates/result.html", number=number, result=documents, ordered_word=get_top_20(), logged=logged, query=word)
+	if not teste(value, query):
+		return template("templates/result.html", number=number, result=documents, ordered_word=get_top_20(), logged=logged, query=word, value=False)
 	else:
-		return template("templates/calculation.html", value=value)
+		return template("templates/result.html", number=number, result=documents, ordered_word=get_top_20(), logged=logged, query=word, value="%s = %s" % (" ".join(query.split()), value))
 
 
 def get_top_20():
