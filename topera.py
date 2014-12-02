@@ -91,6 +91,11 @@ def init():
 	return template("templates/index.html", ordered_word=get_top_20(), logged=logged)
 
 def word_counter(string, logged):
+	"""
+	Input: string (str): user's query;
+		   logged (bool): user's login status.
+	Output: (dict) Dictionary with the words counting.
+	Obs: updates the session's dictionary of the user's words counting history"""
 	global users_data
 	list_words = string.split(" ")
 	result = {}
@@ -119,6 +124,11 @@ def get_operator_fn(op):
 
 
 def evaluate(string):
+	"""
+	Input: string (str): Query input
+	Output: (float): Evaluated expression
+			None: if it's not a mathematical expression
+	"""
 	operations = ["-","+","/","*","^"]
 	accu = 0
 	try:
@@ -144,6 +154,11 @@ def evaluate(string):
 		return None
 
 def teste(evaluated, original):
+	"""
+	Input: evaluated (float/None): evaluate Output
+		   original (str): Query input
+	Output: (bool): True if the evaluated is mathematical expression and not just a number, otherwise False
+	"""
 	if evaluated == None:
 		return False
 	try:
@@ -167,6 +182,10 @@ def show_result(page_number=0):
 
 
 def get_top_20():
+	"""
+	Input: -
+	Output: (list): List of words ordered by it's occurance
+	"""
 	global users_data
 	if request.session.get('logged', False):
 		ordered_words = sorted(users_data[request.session['user_email']].items(), key=operator.itemgetter(1), reverse=True)[:20]
