@@ -6,7 +6,7 @@ from apiclient.errors import HttpError
 from apiclient.discovery import build
 import httplib2
 from beaker.middleware import SessionMiddleware
-from Backend.models import *
+from database.models import *
 
 # GOOGLE API CODE --------------------BEGINS-----------------
 flow = OAuth2WebServerFlow(
