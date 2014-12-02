@@ -15,6 +15,10 @@ body {
 <body>
 	<a href="/"><img src="../static/img/logo.jpg"/></a>
 	<h1>Topera</h1>
+	<form action="/result/0" method="GET">
+		<input type="text" placeholder="Topera for winners!" name="keywords" autofocus required>
+		<button type="submit">submit</button>
+	</form>
 	%if value:
 	<h3>{{value}}</h3>
 	%end
