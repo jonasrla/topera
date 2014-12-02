@@ -1,4 +1,4 @@
-from bottle import route, run, template, get, request, redirect, app, hook, error, redirect
+from bottle import route, run, template, get, request, redirect, app, hook, error, static_file
 import operator
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.client import flow_from_clientsecrets
@@ -65,6 +65,11 @@ def autenticate_2():
 	redirect('/')
 
 #GOOGLE API CODE -------------------END----------------
+
+@route('/static/<filename:path>')
+def server_static(filename):
+	return static_file(filename, root='./static')
+
 
 @route('/logout')
 def logout():
