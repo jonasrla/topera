@@ -15,6 +15,9 @@ body {
 <body>
 	<a href="/"><img src="../static/img/logo.jpg"/></a>
 	<h1>Topera</h1>
+	%if value:
+	<h3>{{value}}</h3>
+	%end
 	%if not len(result):
 	<h2>no such word</h2>
 	%end
