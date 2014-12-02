@@ -4,6 +4,12 @@ import csv
 import time
 import paramiko
 from scp import SCPClient
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("file.zip", help="Put the name of the .zip if extention file containing the complete webserver\nIt must contain:\n1. topera.py\n2. data/\n3. database/\n4. static/\n5. templates/")
+file_name = parser.parse_args()
+
 
 f = open('credentials.csv','r')
 reader = csv.reader(f,delimiter=',')
@@ -70,16 +76,15 @@ for n, com in enumerate(commands):
 
 
 if __name__=="__main__":
-    import argparse
 
-    parser = argparse.ArgumentParser(description='Script to deploy the website')
 
-    parser.add_argument("file", nargs=1, help='Name the zip file with the website files')
-
-    file_name = parser.parse_args().file[0]
+    # file_name = parser.parse_args().file[0]
     scp = SCPClient(client.get_transport())
     scp.put(file_name)
     stdin, stdout, stderr = client.exec_command("unzip "+file_name)
+    time.sleep(10)
+    stdin, stdout, stderr = client.exec_command("cd "+file_name[:-4])
+    time.sleep(1)
     stdin, stdout, stderr = client.exec_command("python topera.py")
     print stdout.next()
 
